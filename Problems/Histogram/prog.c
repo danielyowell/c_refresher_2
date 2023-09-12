@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 int main(int argc, char *argv[]) {
 
@@ -60,21 +61,49 @@ int main(int argc, char *argv[]) {
     }
     
 /* FIND MIN OF ARR */
-
     float min = arr[0];
     for (int i = 1; i < intVal; i++) {
-        if(min > arr[i]) {
+        if(min >= arr[i]) {
             min = arr[i];
         }
     }
     printf("min: %f\n", min);
+/* FIND MAX OF ARR */
+    float max = arr[0];
+    for (int i = 1; i < intVal; i++) {
+        if(max <= arr[i]) {
+            max = arr[i];
+        }
+    }
+    printf("max: %f\n", max);
+/* FIND MEAN OF ARR */
+    float mean = 0;
+    for (int i = 0; i < intVal; i++) {
+        mean = mean + arr[i];
+    }
+    mean = mean / intVal;
+    printf("mean: %f\n", mean);
+/* FIND STANDARD DEVIATION */
+    float std = 0;
+    // 2. iterate through arr:
+    //    - subtract mean from each element
+    //    - square result
+    //    - add to std
+    for (int i = 0; i < intVal; i++) {
+        std = std + (arr[i] - mean) * (arr[i] - mean);
+    }
+    // 3. divide by # of elements
+    std = std / intVal;
+    // 4. take square root
+    std = sqrtf(std);
+    printf("std: %f\n", std);
 
 /* CONVERT MIN (FLOAT) TO CHAR ARRAY */
 char buffer2[64];
 int ret = snprintf(buffer2, sizeof buffer2, "%f", min);
 
 if (ret < 0) {
-    return EXIT_FAILURE;
+    // return EXIT_FAILURE; // will we ever need this?
 }
 if (ret >= sizeof buffer) {
     // Result was truncated - resize the buffer and retry.
@@ -82,7 +111,11 @@ if (ret >= sizeof buffer) {
 
 /* WRITE TO OUTPUT FILE */
 
-    //fprintf("Min: %f\n", min);
+    // Write the float value to the file
+    fprintf(outputFile, "%f\n", min);
+    fprintf(outputFile, "%f\n", max);
+    fprintf(outputFile, "%f\n", mean);
+    fprintf(outputFile, "%f\n", std);
 
     // close files and free memory
     fclose(inputFile);

@@ -8,6 +8,7 @@ run-tests-coverage: build
 	./prog input1.txt output1.txt
 	./prog input2.txt output2.txt
 	./prog input3.txt output3.txt
+	./prog input4.txt output4.txt
 	gcov prog.c
 
 # Run Valgrind to find memory leaks, requires that we build the code
@@ -17,11 +18,12 @@ run-tests-leak: build
 	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=20 --track-fds=yes ./prog input1.txt output1.txt
 	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=20 --track-fds=yes ./prog input2.txt output2.txt
 	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=20 --track-fds=yes ./prog input3.txt output3.txt
+	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=20 --track-fds=yes ./prog input4.txt output4.txt
 
 # Compile the code, requires that we clean up some files first.
 # Add –lm if your code needs the math library.
 build: clean
-	gcc -fprofile-arcs -ftest-coverage -g prog.c -o prog
+	gcc -fprofile-arcs -ftest-coverage -g prog.c -o prog -lm
 clean:
 	rm -f *~
 	rm -f prog
