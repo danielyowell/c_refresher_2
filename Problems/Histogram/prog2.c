@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
     const char *inputFilePath = argv[1];
     const char *outputFilePath = argv[2];
 
-    FILE *inputFile = fopen(inputFilePath, "r");
+    FILE *inputFile = fopen(inputFilePath, "r+");
     FILE *outputFile = fopen(outputFilePath, "w");
 
     if (inputFile == NULL || outputFile == NULL) {
@@ -40,13 +40,36 @@ int main(int argc, char *argv[]) {
 
 /* PRINT */
     for(int i = 0; i < 26; i++) {
-        printf("%c: %d\n", 'a' + i, letterCount[i]);
+        // printf("%c: %d\n", 'a' + i, letterCount[i]);
         //fprintf(outputFile, "%c: %d\n", 'a' + i, letterCount[i]);
     }
 
 /* next:
 in a while loop, iterate through letterCount and fprint a space if 0
+also display in console
 */
+int allZero = 0;
+// repeat until allZero == 1
+while(allZero == 0) {
+    // set allZero to  1
+    allZero = 1;
+    fprintf(outputFile, "\n");
+    printf("\n");
+    for(int i = 0; i < 26; i++) {
+        if(letterCount[i] > 0) {
+            // if there is a nonzero value (a letter), set allZero to 0
+            allZero = 0;
+            fprintf(outputFile, "X");
+            printf("X");
+            letterCount[i] = letterCount[i] - 1;
+        }
+        else {
+            fprintf(outputFile, " ");
+            printf(" ");
+        }    
+    }
+    rewind(outputFile);
+}
 
     
 
