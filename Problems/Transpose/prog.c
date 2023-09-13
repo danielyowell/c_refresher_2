@@ -8,20 +8,6 @@
 #include <string.h>
 #include <ctype.h>
 
-int countIntegersInLine(char *line) {
-    int count = 0;
-    char *token = strtok(line, " \t\n"); // Split the line into tokens using space, tab, and newline as delimiters
-    
-    while (token != NULL) {
-        if (isdigit(token[0])) { // Check if the token is an integer
-            count++;
-        }
-        token = strtok(NULL, " \t\n"); // Get the next token
-    }
-    
-    return count;
-}
-
 int main(int argc, char *argv[]) {
 
     char line[1000]; // Adjust the buffer size as needed
@@ -45,62 +31,55 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-    // count rows
-    int maxRows = 0;
-    while (fgets(line, sizeof(line), inputFile) != NULL) {
-        maxRows++;
-    }
-    printf("# of rows: %d\n", maxRows);
+/* SCAN ROW/COL INFO FROM LINE 1 */
+
+    int num = 0;
+    fscanf(inputFile, "%d", &num);
+    //printf("rows: %d\n", num);
+    int maxRows = num;
+    fscanf(inputFile, "%d", &num);
+    //printf("cols: %d\n", num);
+    int maxCols = num;
 
     rewind(inputFile);
 
-    int maxCols = 0;
-    // count columns
-    int totalIntegers = 0;
-    while (fgets(line, sizeof(line), inputFile) != NULL) {
-        totalIntegers = countIntegersInLine(line);
-        printf("totalIntegers: %d\n", totalIntegers);
-        if(totalIntegers > maxCols) {
-            maxCols = totalIntegers;
-        }
-    }
-    printf("max cols: %d\n", maxCols);
-
-    rewind(inputFile);
+/* CREATE 2D ARRAY AND READ IN VALUES */
 
     // dynamically allocate 2D array with dimensions maxRows x maxCols
-    int **matrix = (int **)malloc(maxRows * sizeof(int *));
+    int **arr2D = (int **)malloc(maxRows * sizeof(int *));
     for(int i = 0; i < maxRows; i++) {
-        matrix[i] = (int *)malloc(maxCols * sizeof(int));
+        arr2D[i] = (int *)malloc(maxCols * sizeof(int));
     }
 
-    // read input file into matrix
+    // read input file into arr2D
     int row = 0;
     int col = 0;
 
+    // skip first line
+    fgets(line, sizeof(line), inputFile);
+    // fgets gets each line and stores it in line
     while (fgets(line, sizeof(line), inputFile) != NULL) {
-        char *token = strtok(line, " \t\n"); // Split the line into tokens using space, tab, and newline as delimiters
+        // strtok stands for "string token" (i think) and splits the line into tokens (chars)
+        // uses spaces as delimiters, so all multi-digit numbers are preserved
+        // strtok returns a pointer to the first token
+        char *token = strtok(line, " \t\n");
         while (token != NULL) {
-            if (isdigit(token[0])) { // Check if the token is an integer
-                matrix[row][col] = atoi(token);
+            // isdigit checks if the token is a valid digit
+            if (isdigit(token[0])) {
+                // atoi converts the token to an int. we then put it in arr2D
+                arr2D[row][col] = atoi(token);
                 col++;
             }
-            token = strtok(NULL, " \t\n"); // Get the next token
+            // call strtok again to get the next token
+            token = strtok(NULL, " \t\n");
         }
         row++;
         col = 0;
     }
 
-    // print matrix
-    printf("matrix:\n");
-    for(int i = 0; i < maxRows; i++) {
-        for(int j = 0; j < maxCols; j++) {
-            printf("%d ", matrix[i][j]);
-        }
-        printf("\n");
-    }
+/* TRANSPOSE 2D ARRAY */
 
-    // transpose matrix
+    // just do everything as before, with maxRows and maxCols switched
     int **transpose = (int **)malloc(maxCols * sizeof(int *));
     for(int i = 0; i < maxCols; i++) {
         transpose[i] = (int *)malloc(maxRows * sizeof(int));
@@ -108,17 +87,18 @@ int main(int argc, char *argv[]) {
 
     for (int i = 0; i < maxCols; i++) {
         for (int j = 0; j < maxRows; j++) {
-            transpose[i][j] = matrix[j][i]; // Swap row and column indices
+            transpose[i][j] = arr2D[j][i];
         }
     }
 
-    // print transpose
-    printf("transpose:\n");
+/* PRINT TO OUTPUT FILE */
+
+    fprintf(outputFile, "%d %d\n", maxCols, maxRows);
     for(int i = 0; i < maxCols; i++) {
         for(int j = 0; j < maxRows; j++) {
-            printf("%d ", transpose[i][j]);
+            fprintf(outputFile, "%d ", transpose[i][j]);
         }
-        printf("\n");
+        fprintf(outputFile, "\n");
     }
 
 }
